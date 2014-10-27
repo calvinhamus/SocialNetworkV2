@@ -20,8 +20,8 @@ public class Tweet
 		this.id = id;
 	}
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", message=" + message +"]";
-	}
+//	@Override
+//	public String toString() {
+//		return "User [id=" + id + ", message=" + message +"]";
+//	}
 }

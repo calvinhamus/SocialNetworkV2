@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.time.StopWatch;
 
+import com.google.gson.Gson;
+
 import course.cloud.computing.classes.User;
 import course.cloud.computing.classes.Users;
 import course.cloud.computing.data.SocialNetworkDataBase;
@@ -28,6 +30,7 @@ import course.cloud.computing.requests.UnfollowUserRequest;
 @Path("/friendships")
 public class FollowersAndFollingService 
 {
+	Gson gson = new Gson();
 	private final static String queueName = "processing-queue";
 	
 	@GET
@@ -51,8 +54,9 @@ public class FollowersAndFollingService
 		users = request.getResponse();
 		stopwatch.stop();
 		long split = stopwatch.getSplitTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		SocialNetworkDataBase.addCode("201");
-		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(users.toString()).build();
+		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(users)).build();
 	}
 	@GET
 	@Produces("application/json")
@@ -74,8 +78,10 @@ public class FollowersAndFollingService
 		}
 		users = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getSplitTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		SocialNetworkDataBase.addCode("201");
-		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(users.toString()).build();
+		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(users)).build();
 	}
 	@POST
 	@Produces("application/json")
@@ -99,9 +105,11 @@ public class FollowersAndFollingService
 		}
 		user = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getSplitTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		if(user.getId() != 0){
 			SocialNetworkDataBase.addCode("201");
-			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(user.toString()).build();			
+			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(user)).build();			
 		}
 		SocialNetworkDataBase.addCode("403");
 		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();
@@ -126,9 +134,11 @@ public class FollowersAndFollingService
 		}
 		user = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getSplitTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		if(user.getId() != 0){
 			SocialNetworkDataBase.addCode("201");
-			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(user.toString()).build();
+			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(user)).build();
 		}
 		SocialNetworkDataBase.addCode("403");
 		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();
@@ -153,9 +163,11 @@ public class FollowersAndFollingService
 		}
 		users = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getSplitTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		if(!users.getUserList().isEmpty()){
 			SocialNetworkDataBase.addCode("201");
-			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(users.toString()).build();
+			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(users)).build();
 		}
 		SocialNetworkDataBase.addCode("403");
 		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();
@@ -180,9 +192,11 @@ public class FollowersAndFollingService
 		}
 		users = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getSplitTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		if(!users.getUserList().isEmpty()){
 			SocialNetworkDataBase.addCode("201");
-			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(users.toString()).build();
+			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(users)).build();
 		}
 		SocialNetworkDataBase.addCode("403");
 		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();

@@ -18,12 +18,14 @@ public class CreateUserRequest implements WorkItem {
 
 	@Override
 	public boolean process() {
+		response = new User();
 		try {
-			response = new User();
 			response.setId(SocialNetworkDataBase.insertUser(userName, "a@a.com", "password"));
+			response.setName(userName);
 		} catch (SQLException e) {
+			response.setMessage(e.toString());
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 		isProcessed = true;
 		return isProcessed;

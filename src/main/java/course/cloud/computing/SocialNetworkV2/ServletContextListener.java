@@ -42,7 +42,8 @@ public class ServletContextListener implements
 
 		// Start the queue and the thread factory here
 		ProcessingFactory.create("processing-queue", properties);
-		SocialNetworkDataBase.getDatabase();
+		//SocialNetworkDataBase.getDatabase();
+		System.out.println("DB created");
 
 	}
 

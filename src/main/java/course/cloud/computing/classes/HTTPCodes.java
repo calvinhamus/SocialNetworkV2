@@ -2,6 +2,7 @@ package course.cloud.computing.classes;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 public class HTTPCodes 
 {
@@ -12,37 +13,96 @@ public class HTTPCodes
 		codesList.add(code);
 		Collections.sort(codesList);
 	}
-	public String getErrors(String type)
+	public ArrayList<HTTPCode> getErrors(String type)
 	{
-		return createJSON(getCodes(type));	
+		return getCodes(type);	
 	}
-	public String getSuccess(String resolution)
+	public ArrayList<HTTPCode> getSuccess(String resolution)
 	{
+		Date d = new Date();
 		switch (resolution) {
-		case "minutes":
-			//codesList.
-			break;
-		case "hours":
-					
-					break;
-		case "days":
-			
-			break;
-		case "months":
-			
-			break;
+		case "minute":
+			return getLastMinuteMessages(d);
+			//break;
+		case "hour":
+			return getLastHourMessages(d);	
+					//break;
+		case "day":
+			return getLastDayMessages(d);
+			//break;
+		case "month":
+			return getLastMonthMessages(d);
+			//break;
 		default:
 			break;
 		}
 		return null;
 		
 	}
+	private ArrayList<HTTPCode> getLastMonthMessages(Date d) {
+		ArrayList<HTTPCode> returnList = new ArrayList<HTTPCode>();
+		int count = 0;
+		for(HTTPCode code : codesList)
+		{
+			if (count <=100 &&(code.getTime().getMonth() <= d.getMonth() && code.getTime().getMonth() >= d.getMonth()-1))
+					{
+						returnList.add(code);
+					}
+			count++;
+		}
+		return returnList;
+	}
+	private ArrayList<HTTPCode> getLastDayMessages(Date d) {
+		ArrayList<HTTPCode> returnList = new ArrayList<HTTPCode>();
+		int count = 0;
+		for(HTTPCode code : codesList)
+		{
+			if (count <=100 &&code.getTime().getMonth() == d.getMonth() && 
+					(code.getTime().getDay() <= d.getDay() && code.getTime().getDay() >= d.getDay()-1))
+					{
+						returnList.add(code);
+					}
+			count++;
+		}
+		return returnList;
+	}
+	private ArrayList<HTTPCode> getLastHourMessages(Date d) 
+	{
+		ArrayList<HTTPCode> returnList = new ArrayList<HTTPCode>();
+		int count = 0;
+		for(HTTPCode code : codesList)
+		{
+			if (count <=100 &&code.getTime().getMonth() == d.getMonth() && code.getTime().getDay() == d.getDay() && 
+					(code.getTime().getHours() <= d.getHours() && code.getTime().getHours() >= d.getHours()-1))
+					{
+						returnList.add(code);
+					}
+			count++;
+		}
+		return returnList;
+		
+	}
+	private ArrayList<HTTPCode> getLastMinuteMessages(Date d) {
+		ArrayList<HTTPCode> returnList = new ArrayList<HTTPCode>();
+		int count = 0;
+		for(HTTPCode code : codesList)
+		{
+			if (count <=100 &&code.getTime().getMonth() == d.getMonth() && code.getTime().getDay() == d.getDay() && code.getTime().getHours() == d.getHours() &&
+					(code.getTime().getMinutes() <= d.getMinutes() && code.getTime().getMinutes() >= d.getMinutes()-1))
+					{
+						returnList.add(code);
+					}
+			count++;
+		}
+		return returnList;
+	}
 	private ArrayList<HTTPCode> getCodes(String type)
 	{
 		ArrayList<HTTPCode> returnList = new ArrayList<HTTPCode>();
 		for(HTTPCode code : codesList)
 		{
-			if (code.getCode() != type)
+			int temp = Integer.parseInt(code.getCode());
+			if (temp == Integer.parseInt(type))
 			{
 				returnList.add(code);
 			}

@@ -22,10 +22,10 @@ public class HTTPCode  implements Comparable<HTTPCode>
 	{
 		this.code = cd;
 	}
-	@Override
-	public String toString() {
-		return "{\"HTTPCode\":{ \"Code\":" + code + ", \"Time\":" + time +"}}";
-	}
+//	@Override
+//	public String toString() {
+//		return "{\"HTTPCode\":{ \"Code\":" + code + ", \"Time\":" + time +"}}";
+//	}
 	@Override
 	public int compareTo(HTTPCode compairCode) {
 		return getTime().compareTo(compairCode.getTime());

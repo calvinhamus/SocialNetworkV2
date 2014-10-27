@@ -1,5 +1,5 @@
-Sun Oct 12 20:51:01 MDT 2014 Thread[Timer-2,5,main] Cleanup action starting
-java.sql.SQLException: Failed to start database 'socialNetowrkDB' with class loader ContextLoader@Cloud Computing Course, see the next exception for details.
+Sat Oct 25 21:48:48 MDT 2014 Thread[Timer-2,5,main] Cleanup action starting
+java.sql.SQLException: Failed to start database 'socialNetworkDB' with class loader ContextLoader@Social Network, see the next exception for details.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
 	at org.apache.derby.impl.jdbc.Util.seeNextException(Unknown Source)
@@ -11,8 +11,8 @@ java.sql.SQLException: Failed to start database 'socialNetowrkDB' with class loa
 	at org.apache.derby.jdbc.AutoloadedDriver.connect(Unknown Source)
 	at java.sql.DriverManager.getConnection(DriverManager.java:664)
 	at java.sql.DriverManager.getConnection(DriverManager.java:208)
-	at course.cloud.computing.data.SocialNetworkDataBase.initialize(SocialNetworkDataBase.java:67)
-	at course.cloud.computing.data.SocialNetworkDataBase.getDatabase(SocialNetworkDataBase.java:49)
+	at course.cloud.computing.data.SocialNetworkDataBase.initialize(SocialNetworkDataBase.java:77)
+	at course.cloud.computing.data.SocialNetworkDataBase.getDatabase(SocialNetworkDataBase.java:58)
 	at course.cloud.computing.SocialNetworkV2.ServletContextListener.contextInitialized(ServletContextListener.java:45)
 	at org.mortbay.jetty.handler.ContextHandler.startContext(ContextHandler.java:540)
 	at org.mortbay.jetty.servlet.Context.startContext(Context.java:135)
@@ -28,11 +28,11 @@ java.sql.SQLException: Failed to start database 'socialNetowrkDB' with class loa
 	at org.mortbay.util.Scanner$1.run(Scanner.java:246)
 	at java.util.TimerThread.mainLoop(Timer.java:555)
 	at java.util.TimerThread.run(Timer.java:505)
-Caused by: ERROR XJ040: Failed to start database 'socialNetowrkDB' with class loader ContextLoader@Cloud Computing Course, see the next exception for details.
+Caused by: ERROR XJ040: Failed to start database 'socialNetworkDB' with class loader ContextLoader@Social Network, see the next exception for details.
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.wrapArgsForTransportAcrossDRDA(Unknown Source)
 	... 28 more
-Caused by: ERROR XSDB6: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetowrkDB.
+Caused by: ERROR XSDB6: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetworkDB.
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.impl.store.raw.data.BaseDataFileFactory.privGetJBMSLockOnDB(Unknown Source)
@@ -68,7 +68,7 @@ Caused by: ERROR XSDB6: Another instance of Derby may have already booted the da
 	at org.apache.derby.iapi.services.monitor.Monitor.startPersistentService(Unknown Source)
 	... 25 more
 ============= begin nested exception, level (1) ===========
-java.sql.SQLException: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetowrkDB.
+java.sql.SQLException: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetworkDB.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
 	at org.apache.derby.impl.jdbc.Util.generateCsSQLException(Unknown Source)
 	at org.apache.derby.impl.jdbc.EmbedConnection.bootDatabase(Unknown Source)
@@ -79,8 +79,8 @@ java.sql.SQLException: Another instance of Derby may have already booted the dat
 	at org.apache.derby.jdbc.AutoloadedDriver.connect(Unknown Source)
 	at java.sql.DriverManager.getConnection(DriverManager.java:664)
 	at java.sql.DriverManager.getConnection(DriverManager.java:208)
-	at course.cloud.computing.data.SocialNetworkDataBase.initialize(SocialNetworkDataBase.java:67)
-	at course.cloud.computing.data.SocialNetworkDataBase.getDatabase(SocialNetworkDataBase.java:49)
+	at course.cloud.computing.data.SocialNetworkDataBase.initialize(SocialNetworkDataBase.java:77)
+	at course.cloud.computing.data.SocialNetworkDataBase.getDatabase(SocialNetworkDataBase.java:58)
 	at course.cloud.computing.SocialNetworkV2.ServletContextListener.contextInitialized(ServletContextListener.java:45)
 	at org.mortbay.jetty.handler.ContextHandler.startContext(ContextHandler.java:540)
 	at org.mortbay.jetty.servlet.Context.startContext(Context.java:135)
@@ -96,7 +96,7 @@ java.sql.SQLException: Another instance of Derby may have already booted the dat
 	at org.mortbay.util.Scanner$1.run(Scanner.java:246)
 	at java.util.TimerThread.mainLoop(Timer.java:555)
 	at java.util.TimerThread.run(Timer.java:505)
-Caused by: ERROR XSDB6: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetowrkDB.
+Caused by: ERROR XSDB6: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetworkDB.
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.impl.store.raw.data.BaseDataFileFactory.privGetJBMSLockOnDB(Unknown Source)
@@ -133,7 +133,7 @@ Caused by: ERROR XSDB6: Another instance of Derby may have already booted the da
 	... 25 more
 ============= end nested exception, level (1) ===========
 ============= begin nested exception, level (2) ===========
-ERROR XSDB6: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetowrkDB.
+ERROR XSDB6: Another instance of Derby may have already booted the database E:\workspace\SocialNetworkV2\socialNetworkDB.
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.iapi.error.StandardException.newException(Unknown Source)
 	at org.apache.derby.impl.store.raw.data.BaseDataFileFactory.privGetJBMSLockOnDB(Unknown Source)
@@ -175,8 +175,8 @@ ERROR XSDB6: Another instance of Derby may have already booted the database E:\w
 	at org.apache.derby.jdbc.AutoloadedDriver.connect(Unknown Source)
 	at java.sql.DriverManager.getConnection(DriverManager.java:664)
 	at java.sql.DriverManager.getConnection(DriverManager.java:208)
-	at course.cloud.computing.data.SocialNetworkDataBase.initialize(SocialNetworkDataBase.java:67)
-	at course.cloud.computing.data.SocialNetworkDataBase.getDatabase(SocialNetworkDataBase.java:49)
+	at course.cloud.computing.data.SocialNetworkDataBase.initialize(SocialNetworkDataBase.java:77)
+	at course.cloud.computing.data.SocialNetworkDataBase.getDatabase(SocialNetworkDataBase.java:58)
 	at course.cloud.computing.SocialNetworkV2.ServletContextListener.contextInitialized(ServletContextListener.java:45)
 	at org.mortbay.jetty.handler.ContextHandler.startContext(ContextHandler.java:540)
 	at org.mortbay.jetty.servlet.Context.startContext(Context.java:135)

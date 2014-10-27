@@ -26,9 +26,9 @@ public class ProcessChunk
 	public void setSection(String section) {
 		this.section = section;
 	}
-	@Override
-	public String toString() {
-		return "{\"Chunk\":{  \"Percent\":" + section +"}}";
-	}
+//	@Override
+//	public String toString() {
+//		return "{\"Chunk\":{  \"Percent\":" + section +"}}";
+//	}
 	
 }

@@ -49,16 +49,16 @@ public class ProcessingTime
 		return new ProcessChunk(sum, percent);
 		
 	}
-	@Override
-	public String toString() {
-		String beg = "{\"Processing Chunks\" :{";
-		String middle = "";
-		String end = "}}";
-		for (ProcessChunk chunk : getProcessChunks()) 
-		{
-			middle = middle + chunk.toString();
-		}
-		return beg + middle + end;
-	}
+//	@Override
+//	public String toString() {
+//		String beg = "{\"Processing Chunks\" :{";
+//		String middle = "";
+//		String end = "}}";
+//		for (ProcessChunk chunk : getProcessChunks()) 
+//		{
+//			middle = middle + chunk.toString();
+//		}
+//		return beg + middle + end;
+//	}
 
 }

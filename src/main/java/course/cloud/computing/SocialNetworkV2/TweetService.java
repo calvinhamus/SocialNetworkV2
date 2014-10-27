@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.time.StopWatch;
 
+import com.google.gson.Gson;
+
 import course.cloud.computing.classes.Tweet;
 import course.cloud.computing.classes.Users;
 import course.cloud.computing.data.SocialNetworkDataBase;
@@ -27,6 +29,7 @@ import course.cloud.computing.requests.SendTweetRequest;
 @Path("/tweet")
 public class TweetService 
 {
+	Gson gson = new Gson();
 	private final static String queueName = "processing-queue";
 	@POST
 	@Produces("application/xml")
@@ -50,7 +53,10 @@ public class TweetService
 		}
 		tweet = request.getResponse();
 		stopwatch.stop();
-		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(tweet).build();
+		long split = stopwatch.getTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
+		SocialNetworkDataBase.addCode("201");
+		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(tweet)).build();
 	}
 	@GET
 	@Produces("application/xml")
@@ -70,8 +76,11 @@ public class TweetService
 		}
 		tweet = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		if(tweet.getId() !=0){
-			return Response.status(201).entity(tweet).build();
+			SocialNetworkDataBase.addCode("201");
+			return Response.status(201).entity(gson.toJson(tweet)).build();
 		}
 		SocialNetworkDataBase.addCode("404");
 		return Response.status(Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
@@ -96,7 +105,10 @@ public class TweetService
 		}
 		int result = request.getResponse();
 		stopwatch.stop();
+		long split = stopwatch.getTime();
+		SocialNetworkDataBase.addToProcessingTime(split);
 		if(result != 0){
+			SocialNetworkDataBase.addCode("201");
 			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity("Destroyed").build();//TODO add success parameters
 		}
 		SocialNetworkDataBase.addCode("401");
@@ -110,18 +122,26 @@ public class TweetService
 		HttpSession session = req.getSession();
 		Tweet tweet = new Tweet();
 		int id = (int) session.getAttribute("userid");
-		RetweetRequest request = new RetweetRequest(tweetId, id);
-		TaskQueue queue = ProcessingFactory.getTaskQueue(queueName);
-		StopWatch stopwatch = new StopWatch();
-		if(queue !=null){
-			queue.add(request);
-			stopwatch.start();
+		if(id != 0){
+			RetweetRequest request = new RetweetRequest(tweetId, id);
+			TaskQueue queue = ProcessingFactory.getTaskQueue(queueName);
+			StopWatch stopwatch = new StopWatch();
+			if(queue !=null){
+				queue.add(request);
+				stopwatch.start();
+			}
+			while (!request.isCompleted()){
+				Thread.currentThread().sleep(5);
+			}
+			tweet = request.getResponse();
+			stopwatch.stop();
+			long split = stopwatch.getTime();
+			SocialNetworkDataBase.addToProcessingTime(split);
+			SocialNetworkDataBase.addCode("201");
+			return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(tweet)).build();
 		}
-		while (!request.isCompleted()){
-			Thread.currentThread().sleep(5);
-		}
-		tweet = request.getResponse();
-		stopwatch.stop();
-		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(tweet).build();
+		SocialNetworkDataBase.addCode("401");
+		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();
+		
 	}
 }

@@ -26,21 +26,18 @@ public class SocialNetworkDataBase
 {
 	private static AtomicBoolean init = new AtomicBoolean(false);
 	private static Connection conn = null;
-	static boolean isPopulated = false;
-	
+	 // JDBC driver name and database URL
+	static final String driver = "com.mysql.jdbc.Driver";  
+	static final String url = "jdbc:mysql://CS597-Calvin-LoadBalancer:3306/";
+	static final String dbName = "chatter";
+	   //  Database credentials
+	static final String userName = "remoteUser";
+	static final String password = "password";
+
 	private static ProcessingTime processTimeList = new ProcessingTime();
 
 	private static HTTPCodes httpCodes = new HTTPCodes();
 	 
-	private Set<String> getDBTables(Connection targetDBConn)
-			throws SQLException 
-	{
-		Set<String> set = new HashSet<String>();
-		DatabaseMetaData dbmeta = targetDBConn.getMetaData();
-		readDBTable(set, dbmeta, "TABLE", null);
-		return set;
-	}
-
 	private void readDBTable(Set<String> set, DatabaseMetaData dbmeta,
 			String searchCriteria, String schema) throws SQLException 
 	{
@@ -50,59 +47,29 @@ public class SocialNetworkDataBase
 			set.add(rs.getString("TABLE_NAME").toLowerCase());
 		}
 	}
-
-	public static SocialNetworkDataBase getDatabase() 
+	private static void initialize()
 	{
-		SocialNetworkDataBase socialNetworkdb = new SocialNetworkDataBase();
-		try {
-			socialNetworkdb.initialize();
-		} catch (InstantiationException | IllegalAccessException
-				| ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return socialNetworkdb;
-	}
-	private void initialize() throws InstantiationException,
-		IllegalAccessException, ClassNotFoundException, SQLException 
-	{
-		boolean setDB = init.compareAndSet(false, true);
-		if (setDB) {
-			String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-			Class.forName(driver).newInstance();
-			String protocol = "jdbc:derby:";
-			Properties props = new Properties();
-			conn = DriverManager.getConnection(
-					protocol + "socialNetowrkDB;create=true", props);
-			if (conn != null) {
-				System.out.println("Created the connection");
+		try { 
+				Class.forName(driver).newInstance(); 
+				conn = DriverManager.getConnection(url+dbName,userName,password); 
+				//  
+			} catch (Exception e) 
+			{ 
+				e.printStackTrace(); 
 			}
-			if (!getDBTables(conn).contains("users")) 
-					generateUserTable();
-			if (!getDBTables(conn).contains("pending"))
-					generatePendingTable();
-			if (!getDBTables(conn).contains("userfollowers"))
-					generateUserFollowersTable();
-			if (!getDBTables(conn).contains("userfollowing"))
-					generateUserFollowingTable();
-			if (!getDBTables(conn).contains("tweets"))
-					generateTweetTable();
-			//if (!getDBTables(conn).contains("usertweets"))
-					//generateUserTweetsTable();
-			if (!getDBTables(conn).contains("userfriends"))
-					generateFriendsTable();
-		}
 	}
+	public static void closeConn() throws SQLException 
+	{
+		conn.close();
+	}
+
 	/****************************************************************User Section******************************************/
 	public static int insertUser(String userName,String email, String password) throws SQLException {
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		
 		PreparedStatement statement = null;
 		if(getUserByName(userName) == 0)
 		{
+			initialize();
 			if (statement == null) {
 				statement = conn
 						.prepareStatement("insert into users(userName,email,password) values (?, ?,?)",PreparedStatement.RETURN_GENERATED_KEYS);
@@ -122,10 +89,7 @@ public class SocialNetworkDataBase
 	}
 	public static int getUserById(int Id) throws SQLException
 	{
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		initialize();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
 			lookup = conn
@@ -141,10 +105,7 @@ public class SocialNetworkDataBase
 	}
 	public static int getUserByName(String name) throws SQLException
 	{
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		initialize();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
 			lookup = conn
@@ -156,13 +117,11 @@ public class SocialNetworkDataBase
 		if (set.next()) {
 			result = set.getInt(1);
 		}
+		 closeConn();
 		return result;
 	}
 	public static long getUsers() throws SQLException {
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		initialize();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
 			lookup = conn
@@ -174,16 +133,14 @@ public class SocialNetworkDataBase
 		if (set.next()) {
 			count = set.getLong(1);
 		}
+		 
 		return count;
 	}
 	/**************************************************************** End User Section******************************************/
 	/****************************************************  Followers and Following Section******************************************/
 	public static Users getPendingFollowing(int userId) throws SQLException
 	{
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		initialize();
 		Users users = new Users();
 		Users followers = getFollowers(userId);
 		Users following = getFollowing(userId);
@@ -194,14 +151,12 @@ public class SocialNetworkDataBase
 				users.addUser(user);
 			}
 		}
+		 
 		return users;
 	}
 	public static Users getPendingFollow(int userId) throws SQLException
 	{
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		initialize();
 		Users users = new Users();
 		Users followers = getFollowers(userId);
 		Users following = getFollowing(userId);
@@ -212,14 +167,12 @@ public class SocialNetworkDataBase
 				users.addUser(user);
 			}
 		}
+		 
 		return users;
 	}
 	public static int followUser(int userId, int followingId) throws SQLException 
 	{
-		if(!isPopulated){
-			getDatabase();
-			isPopulated = true;
-		}
+		initialize();
 		if(!checkFollowingStatus(userId,followingId))
 		{
 			PreparedStatement statement = null;
@@ -232,14 +185,17 @@ public class SocialNetworkDataBase
 			statement.execute();
 			ResultSet set = statement.getGeneratedKeys();
 			if (set.next()){ 
+				 
 				return followingId;
 			}			
 		}
+			 
 			return 0;
 		
 		//return user;
 	}
 	private static boolean checkFollowingStatus(int userId, int followingId) throws SQLException {
+		initialize();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
 			lookup = conn
@@ -249,14 +205,16 @@ public class SocialNetworkDataBase
 		ResultSet set = lookup.executeQuery();
 		if (set.next()) {
 			//int follingId = set.getInt("followeringId");
-			
+			 
 			return true;
 		}
+		 
 		return false;
 	}
 
 	public static int unfollowUser(int userId, int followingId) throws SQLException
 	{
+		initialize();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
 			lookup = conn
@@ -266,14 +224,16 @@ public class SocialNetworkDataBase
 		lookup.setInt(2, followingId);
 		if(lookup.executeUpdate()>0)
 		{
+			 
 			return followingId;
 		}
 			
-		//lookup.executeQuery();		
+		 		
 		return 0;
 	}
 	public static Users getFollowing(int userId) throws SQLException
 	{
+		initialize();
 		Users users = new Users();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
@@ -287,10 +247,12 @@ public class SocialNetworkDataBase
 			tempUser.setId(set.getInt(1));
 			users.addUser(tempUser);
 		}
+		 
 		return users;
 	}
 	public static Users getFollowers(int userId) throws SQLException
 	{
+		initialize();
 		Users users = new Users();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
@@ -304,11 +266,13 @@ public class SocialNetworkDataBase
 			tempUser.setId(set.getInt(1));
 			users.addUser(tempUser);
 		}
+		 
 		return users;
 	}
 	/**********Tweet funcitons ************/
 	public static int createNewTweet(int userId, String msg) throws SQLException
 	{
+		initialize();
 		PreparedStatement statement = null;
 		if (statement == null) {
 			statement = conn
@@ -319,13 +283,15 @@ public class SocialNetworkDataBase
 		statement.execute();
 		ResultSet set = statement.getGeneratedKeys();
 		if (set.next()){
-			
+			 
 			return set.getInt(1);
 		}
+		 
 		return 0;
 	}
 	public static Tweet getTweetById(int tweetId) throws SQLException
 	{
+		initialize();
 		Tweet tweet = new Tweet();
 		tweet.setId(0);
 		PreparedStatement lookup = null;
@@ -339,12 +305,15 @@ public class SocialNetworkDataBase
 			
 			tweet.setMessage(set.getString("text"));
 			tweet.setId(set.getInt("id"));
-				return tweet;
+			
+				//return tweet;
 		}
+		 
 		return tweet;
 	}
 	public static int removeTweet(int userId, int tweetId) throws SQLException
 	{
+		initialize();
 		PreparedStatement lookup = null;
 		if (lookup == null) {
 			lookup = conn
@@ -352,54 +321,14 @@ public class SocialNetworkDataBase
 		}
 		lookup.setInt(1, userId);
 		lookup.setInt(2, tweetId);
-		if(lookup.executeUpdate() >0)
+		if(lookup.executeUpdate() >0){
+			 
 			return 1;
+		}
 		//lookup.executeQuery();		
+			 
 		return 0;
 	}
-	/**********End Tweet funcitons************/
-	/*********************************************************End Followers and Following Section******************************************/
-	private void generateUserTable() throws SQLException 
-	{
-		//User Table
-		boolean results = conn
-				.createStatement()
-				.execute(
-						"Create table users "
-						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) " 
-						+ ", userName VARCHAR(255)"
-						+ ", email VARCHAR(255)"
-						+ ", password VARCHAR(255)"
-						+ ",PRIMARY KEY (id))"
-						);
-
-		if (results) {
-			System.out
-					.println("User Tables were created");
-		}
-		
-	}
-	/******V2********/
-//	private void generateUserTweetsTable() throws SQLException {
-//		boolean results = conn
-//				.createStatement()
-//				.execute(
-//						
-//						"Create table userTweets"
-//						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)" //User Tweets table
-//						+ ", userId INT"
-//						+ ", tweetId INT"
-//						+ ", PRIMARY KEY (id)"
-//						+ ", FOREIGN KEY (userId) REFERENCES users"
-//						+ ", FOREIGN KEY (tweetId) REFERENCES tweets)");
-//
-//		if (results) {
-//			System.out
-//					.println("UserTweets Tables were created");
-//		}
-//		
-//	}
-/*********V2***********/
 	public static void addToProcessingTime(Long time)
 	{
 		processTimeList.addTime(time);
@@ -411,100 +340,17 @@ public class SocialNetworkDataBase
 	}
 	public static void addCode(String error)
 	{
+		
 		HTTPCode code = new HTTPCode(error);
 		httpCodes.addCode(code);
 	}
-	public static String getErrors(String type)
+	public static ArrayList<HTTPCode> getErrors(String type)
 	{
 		return httpCodes.getErrors(type);	
 	}
-	/**********************************************Table creation***************************************************************/
-	private void generateTweetTable() throws SQLException {
-		boolean results = conn
-				.createStatement()
-				.execute(
-						"Create table tweets"
-						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)"
-						+ ",userId INT" //Tweets Tab
-						+ ", text VARCHAR(128)"
-						+ ", date TIMESTAMP"
-						+ ",PRIMARY KEY (id)"
-						+ ", FOREIGN KEY (userId) REFERENCES users)");
-
-		if (results) {
-			System.out
-					.println("Tweet Tables were created");
-		}
-	}
-
-	private void generateUserFollowingTable() throws SQLException {
-		boolean results = conn
-				.createStatement()
-				.execute(
-						 "Create table userFollowing "
-						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)" //User Following Table
-						+ ", userId INT"
-						+ ", followeringId INT"
-						+ ", PRIMARY KEY (id)"
-						+ ", FOREIGN KEY (userId) REFERENCES users"
-						+ ", FOREIGN KEY (followeringId) REFERENCES users)");
-
-		if (results) {
-			System.out
-					.println("User Following Tables were created");
-		}
-	}
-
-	private void generateUserFollowersTable() throws SQLException {
-		boolean results = conn
-				.createStatement()
-				.execute(
-						"Create table userFollowers "
-						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)" //User Follower table
-						+ ", userId INT"
-						+ ", followerId INT"
-						+ ", PRIMARY KEY (id)"
-						+ ", FOREIGN KEY (userId) REFERENCES users"
-						+ ", FOREIGN KEY (followerId) REFERENCES users)");
-
-		if (results) {
-			System.out
-					.println("UserFollowers Tables were created");
-		}
-	}
-	private void generatePendingTable() throws SQLException {
-		boolean results = conn
-				.createStatement()
-				.execute(
-						 " Create table pending "
-						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)" //Pending Table
-						+ ", userId INT"
-						+ ", friendId INT"
-						+ ", PRIMARY KEY (id)"
-						+ ", FOREIGN KEY (userId) REFERENCES users"
-						+ ", FOREIGN KEY (friendId) REFERENCES users)");
-
-		if (results) {
-			System.out
-					.println("Pending Table were created");
-		}
-	}
-	private void generateFriendsTable() throws SQLException {
-		boolean results = conn
-				.createStatement()
-				.execute(
-						 " Create table userFriends "
-						+ "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)" //Pending Table
-						+ ", userId INT"
-						+ ", friendId INT"
-						+ ", PRIMARY KEY (id)"
-						+ ", FOREIGN KEY (userId) REFERENCES users"
-						+ ", FOREIGN KEY (friendId) REFERENCES users)");
-
-		if (results) {
-			System.out
-					.println("Pending Table were created");
-		}
+	public static ArrayList<HTTPCode> getResolution(String resolution)
+	{
+		return httpCodes.getSuccess(resolution);
 	}
 
 	
