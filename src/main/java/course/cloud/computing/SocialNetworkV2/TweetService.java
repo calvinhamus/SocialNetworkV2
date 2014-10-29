@@ -38,15 +38,15 @@ public class TweetService
 	{
 		Integer id = null;
 		if(msg.length() > 128){
-			SocialNetworkDataBase.addCode("404");
+			SocialNetworkDataBase.addCode("403");
 			return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();//TODO FINSIH this
 		}
 		HttpSession session = req.getSession();
 		Tweet tweet = new Tweet();
 		id = (Integer) session.getAttribute("userid");
 		if(id == null){
-			SocialNetworkDataBase.addCode("404");
-			return Response.status(Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
+			SocialNetworkDataBase.addCode("401");
+			return Response.status(Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").build();
 		}
 			
 		SendTweetRequest request = new SendTweetRequest(id,msg);
@@ -64,7 +64,11 @@ public class TweetService
 		long split = stopwatch.getTime();
 		SocialNetworkDataBase.addToProcessingTime(split);
 		SocialNetworkDataBase.addCode("201");
-		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(tweet)).build();
+		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(tweet))
+				.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+				.header("Access-Control-Max-Age", "1209600").build();
 	}
 	@GET
 	@Produces("application/xml")

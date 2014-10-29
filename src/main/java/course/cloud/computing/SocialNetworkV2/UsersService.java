@@ -2,17 +2,18 @@ package course.cloud.computing.SocialNetworkV2;
 
 import java.sql.SQLException;
 
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -126,14 +127,18 @@ public class UsersService //implements IUsersService
 							id = userID;
 							session.setAttribute("userid", id);
 							SocialNetworkDataBase.addCode("201");
-							return Response.status(Status.ACCEPTED).header("Access-Control-Allow-Origin", "*").build();
+							return Response.status(Status.ACCEPTED).header("Access-Control-Allow-Origin", "*")
+									.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+									.header("Access-Control-Allow-Credentials", "true")
+									.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+									.header("Access-Control-Max-Age", "1209600").build();
 					}
 				} catch (Exception e) {
 					System.out.println(e.getMessage());
 				}
 			}
-			SocialNetworkDataBase.addCode("404");
-		return Response.status(Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
+			SocialNetworkDataBase.addCode("403");
+		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();
 
 	}
 
