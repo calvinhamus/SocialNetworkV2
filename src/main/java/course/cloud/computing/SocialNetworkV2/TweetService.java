@@ -36,11 +36,19 @@ public class TweetService
 	@Path("tweet/{msg}")
 	public Response sendTweet(@Context HttpServletRequest req,@PathParam("msg") String msg) throws InterruptedException
 	{
-		if(msg.length() > 128)
+		Integer id = null;
+		if(msg.length() > 128){
+			SocialNetworkDataBase.addCode("404");
 			return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();//TODO FINSIH this
+		}
 		HttpSession session = req.getSession();
 		Tweet tweet = new Tweet();
-		int id = (int) session.getAttribute("userid");
+		id = (Integer) session.getAttribute("userid");
+		if(id == null){
+			SocialNetworkDataBase.addCode("404");
+			return Response.status(Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
+		}
+			
 		SendTweetRequest request = new SendTweetRequest(id,msg);
 		TaskQueue queue = ProcessingFactory.getTaskQueue(queueName);
 		StopWatch stopwatch = new StopWatch();

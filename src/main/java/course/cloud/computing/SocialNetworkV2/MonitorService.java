@@ -48,7 +48,9 @@ public class MonitorService
 	@Path("qps/{resolution}")
 	public Response getResolution(@PathParam("resolution") String timeFrame) throws InterruptedException
 	{
-		return Response.status(Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").build();
+		ArrayList<HTTPCode> codes = SocialNetworkDataBase.getResolution(timeFrame);
+		SocialNetworkDataBase.addCode("201");
+		return Response.status(201).header("Access-Control-Allow-Origin", "*").entity(gson.toJson(codes)).build();
 	}
 	@GET
 	@Produces("application/json")
